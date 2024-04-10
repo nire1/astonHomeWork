@@ -16,8 +16,15 @@ CREATE TABLE books(
 
 );
 CREATE TABLE authors_books(
-                              authors_id int not null unique ,
+                              authors_id int,
                               FOREIGN KEY (authors_id) REFERENCES authors(id),
-                              books_id INT not null unique ,
+                              books_id INT,
                               FOREIGN KEY (books_id) REFERENCES books(id)
 );
+
+INSERT INTO authors_books
+(authors_id, books_id)
+SELECT a.id,b.id
+FROM authors a
+         CROSS JOIN books b
+WHERE a.id = b.author_id;

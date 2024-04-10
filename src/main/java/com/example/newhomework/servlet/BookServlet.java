@@ -1,9 +1,7 @@
 package com.example.newhomework.servlet;
 
-import com.example.newhomework.HelloServlet;
-import com.example.newhomework.dao.BookDao;
-import com.example.newhomework.entity.Author;
-import com.example.newhomework.entity.Book;
+import com.example.newhomework.dto.BookDto;
+import com.example.newhomework.service.impl.BookServiceImpl;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,57 +14,38 @@ import java.util.List;
 
 @WebServlet(urlPatterns = "/books/*")
 public class BookServlet extends HttpServlet {
-    private BookDao bookDao;
     private Gson gson;
+    private BookServiceImpl bookService;
     @Override
-    public void init() throws ServletException {
+    public void init()  {
 
-        bookDao = new BookDao();
+        bookService = new BookServiceImpl();
         gson = new Gson();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        List<Book> books = bookDao.getAll();
+        List<BookDto> books = bookService.getAll();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(gson.toJson(books));
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String name = req.getParameter("name");
-        Long author_id = Long.parseLong(req.getParameter("author_id"));
-
-        Book book = new Book();
-        Author author = new Author();
-        author.setId(author_id);
-
-        book.setName(name);
-        book.setAuthor(author);
-        bookDao.create(book);
-        resp.setStatus(HttpServletResponse.SC_CREATED);
+       bookService.create(req, resp);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
-        String name = req.getParameter("name");
-        long authorId = Long.parseLong(req.getParameter("author_id"));
-        Book book = new Book()
-                .setId(id)
-                .setName(name);
-
-        bookDao.update(book,authorId);
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        bookService.update(req, resp);
 
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long id = Long.parseLong(req.getParameter("id"));
-        bookDao.delete(id);
-        resp.setStatus(HttpServletResponse.SC_OK);
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        bookService.delete(req, resp);
     }
 }

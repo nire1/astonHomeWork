@@ -9,6 +9,5 @@
 </h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
-<a href="book_servlet">Book Servlet</a>
 </body>
 </html>
