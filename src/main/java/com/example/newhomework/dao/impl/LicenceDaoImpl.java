@@ -18,7 +18,7 @@ public class LicenceDaoImpl implements LicenceDao {
                     "postgres",
                     "postgres");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -29,12 +29,12 @@ public class LicenceDaoImpl implements LicenceDao {
     @Override
     public int create(Licence licence) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO licences(number) VALUES (?)");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO licences(number) VALUES (?)")){
             preparedStatement.setString(1, licence.getNumber());
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -42,9 +42,9 @@ public class LicenceDaoImpl implements LicenceDao {
     @Override
     public List<Licence> getAll() {
         List<Licence> licenceList = new ArrayList<>();
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM licences");
+        try
+                (Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM licences")){
             while (resultSet.next()) {
                 Licence licence = new Licence()
                         .setId(resultSet.getInt("id"))
@@ -52,7 +52,7 @@ public class LicenceDaoImpl implements LicenceDao {
                 licenceList.add(licence);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return licenceList;
     }
@@ -60,13 +60,13 @@ public class LicenceDaoImpl implements LicenceDao {
     @Override
     public int delete(String number) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM licences WHERE number=?");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM licences WHERE number=?")){
             preparedStatement.setString(1, number);
             status = preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -74,13 +74,13 @@ public class LicenceDaoImpl implements LicenceDao {
     @Override
     public int update(Licence licence) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE licences SET number=? WHERE id=?");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE licences SET number=? WHERE id=?")){
             preparedStatement.setString(1, licence.getNumber());
             preparedStatement.setLong(2, licence.getId());
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return status;
     }

@@ -8,5 +8,5 @@ public interface BookDao {
     int create(Book book);
     List<Book> getAll();
     int delete(long id);
-    int update(Book book,long author_id);
+    int update(Book book);
 }

@@ -38,7 +38,7 @@ public class AuthorDaoImpl implements AuthorDao {
             status = preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -50,10 +50,9 @@ public class AuthorDaoImpl implements AuthorDao {
         List<Book> bookList = new ArrayList<>();
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
-                        "SELECT authors.id, authors.name, authors.licence_id, licences.id as l_id, licences.number as l_number,books.id as b_id,books.name as b_name\n" +
+                        "SELECT authors.id, authors.name, authors.licence_id, licences.id as l_id, licences.number as l_number\n" +
                                 "FROM authors\n" +
-                                "         INNER JOIN  licences on authors.licence_id = licences.id\n" +
-                                "        INNER JOIN books on authors.id = books.author_id\n" +
+                                "          JOIN licences on authors.licence_id = licences.id\n" +
                                 "WHERE authors.id=?")) {
             preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -63,25 +62,39 @@ public class AuthorDaoImpl implements AuthorDao {
                     licence.setId(resultSet.getLong("l_id"))
                             .setNumber(resultSet.getString("l_number"));
                     author.setLicence(licence);
-                    while (resultSet.next()) {
-                        bookList.add(parseBookFromResultSet(resultSet));
-                    }
+                    bookList = getBookByAuthor(id);
                     author.setBookList(bookList);
                 }
 
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return author;
     }
-
-    private Book parseBookFromResultSet(ResultSet rs) throws SQLException {
+    public List<Book> getBookByAuthor(long id){
+        List<Book>bookList = new ArrayList<>();
         Book book = new Book();
-        book.setId(rs.getLong("b_id"));
-        book.setName(rs.getString("b_name"));
-        return book;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM books b WHERE b.author_id = ?")){
+            preparedStatement.setLong(1,id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                book.setId(resultSet.getLong("id"));
+                book.setName(resultSet.getString("name"));
+                bookList.add(book);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return bookList;
     }
+
+//    private Book parseBookFromResultSet(ResultSet rs) throws SQLException {
+//        Book book = new Book();
+//        book.setId(rs.getLong("b_id"));
+//        book.setName(rs.getString("b_name"));
+//        return book;
+//    }
 
     @Override
     public int delete(long id) {
@@ -92,7 +105,7 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setLong(1, id);
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -108,8 +121,22 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setLong(2, author.getId());
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
+    }
+
+    public boolean existById(Long id){
+        boolean exist = false;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT EXISTS (SELECT 1 FROM authors WHERE id = ?)")){
+            preparedStatement.setLong(1,id);
+            ResultSet resultSet= preparedStatement.executeQuery();
+            if(resultSet.next()){
+                exist = resultSet.getBoolean("exists");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return exist;
     }
 }

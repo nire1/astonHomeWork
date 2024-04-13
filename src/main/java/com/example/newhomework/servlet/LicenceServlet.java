@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet("/licence")
@@ -32,17 +33,47 @@ public class LicenceServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        licenceService.create(req,resp);
+        String number = req.getParameter("number");
+        Licence licence = new Licence()
+                .setNumber(number);
+        PrintWriter out = resp.getWriter();
+        if (licenceService.create(licence) > 0) {
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+            out.println("запись успешна");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("запись не создалась");
+        }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        licenceService.update(req, resp);
+        String number = req.getParameter("number");
+        PrintWriter out = resp.getWriter();
+        if (licenceService.delete(number) > 0) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.println("запись удалена");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("запись не удалена");
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        licenceService.delete(req, resp);
+        long id = Long.parseLong(req.getParameter("id"));
+        String number = req.getParameter("number");
+        Licence licence = new Licence()
+                .setId(id)
+                .setNumber(number);
+        PrintWriter out = resp.getWriter();
+        if (licenceService.update(licence) > 0) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.println("запись удалена");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("запись не удалена");
+        }
     }
 
 

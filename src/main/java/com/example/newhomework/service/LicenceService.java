@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.List;
 
 public interface LicenceService {
-    void create(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    int create(Licence licence) throws IOException;
     List<Licence> getAll();
-    void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException;
-    void update(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    int delete(String number) throws IOException;
+    int update(Licence licence) throws IOException;
 
 }

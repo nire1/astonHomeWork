@@ -1,6 +1,7 @@
 package com.example.newhomework.service;
 
 import com.example.newhomework.dto.BookDto;
+import com.example.newhomework.entity.Book;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -10,9 +11,9 @@ import java.util.List;
 public interface BookService {
     List<BookDto> getAll();
 
-    void create(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    int create(Book book) throws IOException;
 
-    void update(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    int update(Book book) throws IOException;
 
-    void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    int delete(Long id) throws IOException;
 }

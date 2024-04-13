@@ -7,4 +7,5 @@ public interface AuthorDao {
     Author getById(long id);
     int delete(long id);
     int update(Author author);
+    boolean existById(Long id);
 }

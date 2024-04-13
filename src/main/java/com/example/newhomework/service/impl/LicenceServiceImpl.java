@@ -17,16 +17,17 @@ public class LicenceServiceImpl implements LicenceService {
     private final LicenceDaoImpl licenceDao = new LicenceDaoImpl();
 
     @Override
-    public void create(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String number = req.getParameter("number");
-        Licence licence = new Licence()
-                .setNumber(number);
-        PrintWriter out = resp.getWriter();
-        if (licenceDao.create(licence) > 0) {
-            out.println("запись успешна");
-        } else {
-            out.println("запись не создалась");
-        }
+    public int create(Licence licence) throws IOException {
+        return licenceDao.create(licence);
+//        String number = req.getParameter("number");
+//        Licence licence = new Licence()
+//                .setNumber(number);
+//        PrintWriter out = resp.getWriter();
+//        if (licenceDao.create(licence) > 0) {
+//            out.println("запись успешна");
+//        } else {
+//            out.println("запись не создалась");
+//        }
     }
 
     @Override
@@ -35,28 +36,30 @@ public class LicenceServiceImpl implements LicenceService {
     }
 
     @Override
-    public void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String number = req.getParameter("number");
-        PrintWriter out = resp.getWriter();
-        if (licenceDao.delete(number) > 0) {
-            out.println("запись удалена");
-        } else {
-            out.println("запись не удалена");
-        }
+    public int delete(String number) throws IOException {
+        return licenceDao.delete(number);
+//        String number = req.getParameter("number");
+//        PrintWriter out = resp.getWriter();
+//        if (licenceDao.delete(number) > 0) {
+//            out.println("запись удалена");
+//        } else {
+//            out.println("запись не удалена");
+//        }
     }
 
     @Override
-    public void update(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        long id = Long.parseLong(req.getParameter("id"));
-        String number = req.getParameter("number");
-        Licence licence = new Licence()
-                .setId(id)
-                .setNumber(number);
-        PrintWriter out = resp.getWriter();
-        if (licenceDao.update(licence) > 0) {
-            out.println("запись удалена");
-        } else {
-            out.println("запись не удалена");
-        }
+    public int update(Licence licence) throws IOException {
+        return licenceDao.update(licence);
+//        long id = Long.parseLong(req.getParameter("id"));
+//        String number = req.getParameter("number");
+//        Licence licence = new Licence()
+//                .setId(id)
+//                .setNumber(number);
+//        PrintWriter out = resp.getWriter();
+//        if (licenceDao.update(licence) > 0) {
+//            out.println("запись удалена");
+//        } else {
+//            out.println("запись не удалена");
+//        }
     }
 }

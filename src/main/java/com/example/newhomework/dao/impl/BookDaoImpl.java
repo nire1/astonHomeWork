@@ -19,7 +19,7 @@ public class BookDaoImpl implements BookDao {
                     "postgres",
                     "postgres");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -29,14 +29,14 @@ public class BookDaoImpl implements BookDao {
     @Override
     public int create(Book book) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO books (name, author_id) VALUES (?,?)");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO books (name, author_id) VALUES (?,?)")){
             preparedStatement.setString(1, book.getName());
             preparedStatement.setLong(2, book.getAuthor().getId());
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -44,12 +44,12 @@ public class BookDaoImpl implements BookDao {
     @Override
     public List<Book> getAll() {
         List<Book> books = new ArrayList<>();
-        try {
-            Statement statement = connection.createStatement();
+        try
+                (Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(
                     "SELECT books.id,books.name,books.author_id, authors.name as authors_name \n" +
                             "FROM books \n" +
-                            "    LEFT JOIN public.authors  on books.author_id = authors.id");
+                            "    LEFT JOIN public.authors  on books.author_id = authors.id")){
             while (resultSet.next()) {
                 Book book = new Book();
                 Author author = new Author();
@@ -62,7 +62,7 @@ public class BookDaoImpl implements BookDao {
                 books.add(book);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return books;
     }
@@ -70,29 +70,29 @@ public class BookDaoImpl implements BookDao {
     @Override
     public int delete(long id) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "DELETE FROM books WHERE id=?");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "DELETE FROM books WHERE id=?")){
             preparedStatement.setLong(1, id);
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return status;
     }
 
     @Override
-    public int update(Book book, long author_id) {
+    public int update(Book book) {
         int status = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "UPDATE books SET name=?,author_id=? WHERE id=?");
+        try
+                (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "UPDATE books SET name=?,author_id=? WHERE id=?")){
             preparedStatement.setString(1, book.getName());
-            preparedStatement.setLong(2, author_id);
+            preparedStatement.setLong(2, book.getAuthor().getId());
             preparedStatement.setLong(3, book.getId());
             status = preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return status;
     }
