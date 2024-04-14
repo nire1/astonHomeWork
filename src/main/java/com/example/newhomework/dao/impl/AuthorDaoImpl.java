@@ -38,9 +38,6 @@ public class AuthorDaoImpl implements AuthorDao {
             status = preparedStatement.executeUpdate();
         }
 
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
         return status;
     }
 
@@ -48,7 +45,7 @@ public class AuthorDaoImpl implements AuthorDao {
     public Author getById(long id) {
         Author author = new Author();
         Licence licence = new Licence();
-        List<Book> bookList = new ArrayList<>();
+        List<Book> bookList;
         try
                 (
                         PreparedStatement preparedStatement = connection.prepareStatement(
@@ -95,31 +92,22 @@ public class AuthorDaoImpl implements AuthorDao {
         return bookList;
     }
 
-//    private Book parseBookFromResultSet(ResultSet rs) throws SQLException {
-//        Book book = new Book();
-//        book.setId(rs.getLong("b_id"));
-//        book.setName(rs.getString("b_name"));
-//        return book;
-//    }
 
     @Override
     public int delete(long id) throws SQLException {
-        int status = 0;
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
                         "DELETE FROM authors WHERE id=?")) {
             preparedStatement.setLong(1, id);
             status = preparedStatement.executeUpdate();
         }
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
         return status;
     }
 
     @Override
     public int update(Author author) throws SQLException {
-        int status = 0;
+        int status ;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
                         "UPDATE authors SET name=? WHERE id=?")) {
@@ -128,9 +116,6 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setLong(2, author.getId());
             status = preparedStatement.executeUpdate();
         }
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
         return status;
     }
 

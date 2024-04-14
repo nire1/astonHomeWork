@@ -30,7 +30,7 @@ public class LicenceDaoImpl implements LicenceDao {
 
     @Override
     public int create(Licence licence) throws SQLException {
-        int status = 0;
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO licences(number) VALUES (?)")){
             preparedStatement.setString(1, licence.getNumber());
@@ -59,7 +59,7 @@ public class LicenceDaoImpl implements LicenceDao {
 
     @Override
     public int delete(String number) throws SQLException {
-        int status = 0;
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM licences WHERE number=?")){
             preparedStatement.setString(1, number);
@@ -70,7 +70,7 @@ public class LicenceDaoImpl implements LicenceDao {
 
     @Override
     public int update(Licence licence) throws SQLException {
-        int status = 0;
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE licences SET number=? WHERE id=?")) {
             preparedStatement.setString(1, licence.getNumber());
