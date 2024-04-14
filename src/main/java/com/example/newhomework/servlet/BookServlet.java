@@ -5,7 +5,6 @@ import com.example.newhomework.entity.Author;
 import com.example.newhomework.entity.Book;
 import com.example.newhomework.service.impl.BookServiceImpl;
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(urlPatterns = "/books/*")
@@ -47,12 +47,11 @@ public class BookServlet extends HttpServlet {
         book.setName(name);
         book.setAuthor(author);
         PrintWriter out = resp.getWriter();
-        if (bookService.create(book) > 0) {
+        try {
+            bookService.create(book);
             out.println("запись создалась");
-            resp.setStatus(HttpServletResponse.SC_CREATED);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.println("запись не создалась");
+        } catch (SQLException e) {
+            out.println(e.getMessage());
         }
 
     }
@@ -69,26 +68,23 @@ public class BookServlet extends HttpServlet {
                         .setId(authorId));
 
         PrintWriter out = resp.getWriter();
-        if (bookService.update(book) > 0) {
-            resp.setStatus(HttpServletResponse.SC_OK);
+        try {
+            bookService.update(book);
             out.println("запись обновлена");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.println("запись не обновлена");
+        } catch (Exception e) {
+            out.println(e.getMessage());
         }
-
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         long id = Long.parseLong(req.getParameter("id"));
         PrintWriter out = resp.getWriter();
-        if (bookService.delete(id) > 0) {
-            resp.setStatus(HttpServletResponse.SC_OK);
+        try {
+            bookService.delete(id);
             out.println("запись удалена");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.println("запись не удалена");
+        } catch (Exception e) {
+            out.println(e.getMessage());
         }
     }
 }

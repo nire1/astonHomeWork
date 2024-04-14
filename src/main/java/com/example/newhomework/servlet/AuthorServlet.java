@@ -6,20 +6,22 @@ import com.example.newhomework.entity.Author;
 import com.example.newhomework.entity.Licence;
 import com.example.newhomework.service.impl.AuthorServiceImpl;
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 @WebServlet("/author")
 public class AuthorServlet extends HttpServlet {
     private Gson gson;
     private AuthorServiceImpl authorService;
+    @SneakyThrows
     @Override
     public void init() {
         gson = new Gson();
@@ -29,10 +31,15 @@ public class AuthorServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         long id = Long.parseLong(
                 req.getParameter("id"));
-       AuthorDto authorDto = authorService.getById(id);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(gson.toJson(authorDto));
+       try {
+           AuthorDto authorDto = authorService.getById(id);
+           resp.setContentType("application/json");
+           resp.setCharacterEncoding("UTF-8");
+           resp.getWriter().write(gson.toJson(authorDto));
+       }catch (NoSuchElementException e){
+           resp.getWriter().println("Не найден");
+       }
+
 
 
     }
@@ -47,11 +54,20 @@ public class AuthorServlet extends HttpServlet {
         author.setName(name);
         author.setLicence(new Licence().setId(licenceId));
         PrintWriter out = resp.getWriter();
-        if (authorService.create(author)>0){
-            out.println("Запись успешна");
-        } else {
-            out.println("Запись не создалась");
-        }
+
+            try {
+                authorService.create(author);
+                out.println("Запись успешна");
+            } catch (SQLException e) {
+                out.println(e.getMessage());
+            }
+
+
+//        if (authorService.create(author)>0){
+//            out.println("Запись успешна");
+//        } else {
+//            out.println("Запись не создалась");
+//        }
 
     }
 
@@ -66,11 +82,17 @@ public class AuthorServlet extends HttpServlet {
                 .setName(name);
 
         PrintWriter out = resp.getWriter();
-        if (authorService.update(updatedAuthor) > 0) {
+        try {
+            authorService.update(updatedAuthor);
             out.println("Запись успешна");
-        } else {
-            out.println("Запись не создалась");
+        } catch (Exception e) {
+            out.println(e.getMessage());
         }
+//        if (authorService.update(updatedAuthor) > 0) {
+//            out.println("Запись успешна");
+//        } else {
+//            out.println("Запись не создалась");
+//        }
 
 
     }
@@ -81,15 +103,21 @@ public class AuthorServlet extends HttpServlet {
                 req.getParameter("id"));
 
         PrintWriter out = resp.getWriter();
-        if (authorService.delete(id) > 0) {
-            resp.setStatus(200);
+        try {
+            authorService.delete(id);
             out.println("Запись успешна");
+//            if (authorService.delete(id) > 0) {
+//                resp.setStatus(200);
+//                out.println("Запись успешна");
+//
+//            } else {
+//                resp.setStatus(500);
+//                out.println("id не найден");
+//            }
+        } catch (Exception e) {
+            out.println(e.getMessage());
 
-        } else {
-            resp.setStatus(500);
-            out.println("id не найден");
         }
-
 
 
     }

@@ -1,5 +1,6 @@
 package com.example.newhomework.dao.impl;
 
+import com.example.newhomework.config.ConnectionConfigImpl;
 import com.example.newhomework.dao.LicenceDao;
 import com.example.newhomework.entity.Licence;
 
@@ -9,32 +10,31 @@ import java.util.List;
 
 public class LicenceDaoImpl implements LicenceDao {
     private Connection connection;
+    private ConnectionConfigImpl connectionConfig;
 
     public LicenceDaoImpl() {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/books_shop",
-                    "postgres",
-                    "postgres");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-
         } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.connectionConfig = ConnectionConfigImpl.create();
+        try {
+            this.connection = connectionConfig.getConnection();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
     @Override
-    public int create(Licence licence) {
+    public int create(Licence licence) throws SQLException {
         int status = 0;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO licences(number) VALUES (?)")){
             preparedStatement.setString(1, licence.getNumber());
             status = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
         return status;
     }
@@ -58,30 +58,57 @@ public class LicenceDaoImpl implements LicenceDao {
     }
 
     @Override
-    public int delete(String number) {
+    public int delete(String number) throws SQLException {
         int status = 0;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM licences WHERE number=?")){
             preparedStatement.setString(1, number);
             status = preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
         return status;
     }
 
     @Override
-    public int update(Licence licence) {
+    public int update(Licence licence) throws SQLException {
         int status = 0;
         try
-                (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE licences SET number=? WHERE id=?")){
+                (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE licences SET number=? WHERE id=?")) {
             preparedStatement.setString(1, licence.getNumber());
             preparedStatement.setLong(2, licence.getId());
             status = preparedStatement.executeUpdate();
+        }
+        return status;
+    }
+
+    @Override
+    public boolean existByNumber(String number) {
+
+        boolean exist = false;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT EXISTS (SELECT 1 FROM licences WHERE number = ?)")){
+            preparedStatement.setString(1,number);
+            ResultSet resultSet= preparedStatement.executeQuery();
+            if(resultSet.next()){
+                exist = resultSet.getBoolean("exists");
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return status;
+        return exist;
+    }
+
+    @Override
+    public boolean existById(long id) {
+
+        boolean exist = false;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT EXISTS (SELECT 1 FROM licences WHERE id = ?)")){
+            preparedStatement.setLong(1,id);
+            ResultSet resultSet= preparedStatement.executeQuery();
+            if(resultSet.next()){
+                exist = resultSet.getBoolean("exists");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return exist;
     }
 }

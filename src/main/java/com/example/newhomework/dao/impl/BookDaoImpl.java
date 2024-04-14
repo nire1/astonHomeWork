@@ -1,5 +1,6 @@
 package com.example.newhomework.dao.impl;
 
+import com.example.newhomework.config.ConnectionConfigImpl;
 import com.example.newhomework.dao.BookDao;
 import com.example.newhomework.entity.Author;
 import com.example.newhomework.entity.Book;
@@ -10,34 +11,34 @@ import java.util.List;
 
 public class BookDaoImpl implements BookDao {
     private Connection connection;
+    private ConnectionConfigImpl connectionConfig;
 
     public BookDaoImpl() {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/books_shop",
-                    "postgres",
-                    "postgres");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-
         } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.connectionConfig = ConnectionConfigImpl.create();
+        try {
+            this.connection = connectionConfig.getConnection();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public int create(Book book) {
-        int status = 0;
+    public int create(Book book) throws SQLException {
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO books (name, author_id) VALUES (?,?)")){
+                    "INSERT INTO books (name, author_id) VALUES (?,?)")) {
             preparedStatement.setString(1, book.getName());
             preparedStatement.setLong(2, book.getAuthor().getId());
             status = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
+
         return status;
     }
 
@@ -82,19 +83,30 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public int update(Book book) {
-        int status = 0;
+    public int update(Book book) throws SQLException {
+        int status;
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
                     "UPDATE books SET name=?,author_id=? WHERE id=?")){
             preparedStatement.setString(1, book.getName());
             preparedStatement.setLong(2, book.getAuthor().getId());
             preparedStatement.setLong(3, book.getId());
-            status = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+            status = preparedStatement.executeUpdate();}
         return status;
+    }
+
+    @Override
+    public boolean existById(Long id) throws SQLException {
+        boolean exist = false;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT EXISTS (SELECT 1 FROM books WHERE id = ?)")){
+            preparedStatement.setLong(1,id);
+            ResultSet resultSet= preparedStatement.executeQuery();
+            if(resultSet.next()){
+                exist = resultSet.getBoolean("exists");
+            }
+        }
+
+        return exist;
     }
 
 }

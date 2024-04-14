@@ -73,6 +73,7 @@ class AuthorServletTest {
     }
 
     @Test
+    @SneakyThrows
     void create() throws IOException {
 
 

@@ -7,27 +7,19 @@ import com.example.newhomework.mapper.impl.AuthorToAuthorDtoMapperImpl;
 import com.example.newhomework.service.AuthorService;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorDaoImpl authorDao = new AuthorDaoImpl();
     private final AuthorToAuthorDtoMapperImpl mapper = new AuthorToAuthorDtoMapperImpl();
 
-    @Override
-    public int create(Author author) throws IOException {
-        return authorDao.create(author);
-//        String name = req.getParameter("name");
-//        long licenceId = Long.parseLong(
-//                req.getParameter("licence_id"));
-//        Author author = new Author();
-//        author.setName(name);
-//        author.setLicence(new Licence().setId(licenceId));
-//        PrintWriter out = resp.getWriter();
-//        if (authorDao.create(author) > 0) {
-//            out.println("Запись успешна");
-//        } else {
-//            out.println("Запись не создалась");
-//        }
+    public AuthorServiceImpl() throws SQLException {
+    }
 
+    @Override
+    public int create(Author author) throws IOException, SQLException {
+        return authorDao.create(author);
     }
 
     @Override
@@ -36,42 +28,22 @@ public class AuthorServiceImpl implements AuthorService {
         if (authorDao.existById(id)) {
             Author author = authorDao.getById(id);
             return mapper.map(author);
-        }
-        else return new AuthorDto();
+        } else throw new NoSuchElementException("Не найден");
     }
 
     @Override
-    public int delete(Long id) throws IOException {
-        return authorDao.delete(id);
-//        long id = Long.parseLong(
-//                req.getParameter("id"));
-//
-//        PrintWriter out = resp.getWriter();
-//        if (authorDao.delete(id) > 0) {
-//            out.println("Запись успешна");
-//        } else {
-//            out.println("Запись не создалась");
-//        }
-
+    public int delete(Long id) throws IOException, SQLException {
+        if (authorDao.existById(id)) {
+            return authorDao.delete(id);
+        } else throw new NoSuchElementException("Не найден");
     }
 
     @Override
-    public int update(Author author) throws IOException {
-        return authorDao.update(author);
-//        long id = Long.parseLong(
-//                req.getParameter("id"));
-//        String name = req.getParameter("name");
-//
-//        Author updatedAuthor = new Author()
-//                .setId(id)
-//                .setName(name);
-//
-//        PrintWriter out = resp.getWriter();
-//        if (authorDao.update(updatedAuthor) > 0) {
-//            out.println("Запись успешна");
-//        } else {
-//            out.println("Запись не создалась");
-//        }
+    public int update(Author author) throws IOException, SQLException {
+
+        if (authorDao.existById(author.getId())) {
+            return authorDao.update(author);
+        } else throw new NoSuchElementException("Не найден");
 
     }
 }

@@ -4,30 +4,18 @@ package com.example.newhomework.service.impl;
 import com.example.newhomework.dao.impl.LicenceDaoImpl;
 import com.example.newhomework.entity.Licence;
 import com.example.newhomework.service.LicenceService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class LicenceServiceImpl implements LicenceService {
     private final LicenceDaoImpl licenceDao = new LicenceDaoImpl();
 
     @Override
-    public int create(Licence licence) throws IOException {
+    public int create(Licence licence) throws IOException, SQLException {
         return licenceDao.create(licence);
-//        String number = req.getParameter("number");
-//        Licence licence = new Licence()
-//                .setNumber(number);
-//        PrintWriter out = resp.getWriter();
-//        if (licenceDao.create(licence) > 0) {
-//            out.println("запись успешна");
-//        } else {
-//            out.println("запись не создалась");
-//        }
     }
 
     @Override
@@ -36,30 +24,18 @@ public class LicenceServiceImpl implements LicenceService {
     }
 
     @Override
-    public int delete(String number) throws IOException {
-        return licenceDao.delete(number);
-//        String number = req.getParameter("number");
-//        PrintWriter out = resp.getWriter();
-//        if (licenceDao.delete(number) > 0) {
-//            out.println("запись удалена");
-//        } else {
-//            out.println("запись не удалена");
-//        }
+    public int delete(String number) throws IOException, SQLException {
+        if (licenceDao.existByNumber(number)) {
+            return licenceDao.delete(number);
+        } else throw new NoSuchElementException("не найден");
     }
 
     @Override
-    public int update(Licence licence) throws IOException {
-        return licenceDao.update(licence);
-//        long id = Long.parseLong(req.getParameter("id"));
-//        String number = req.getParameter("number");
-//        Licence licence = new Licence()
-//                .setId(id)
-//                .setNumber(number);
-//        PrintWriter out = resp.getWriter();
-//        if (licenceDao.update(licence) > 0) {
-//            out.println("запись удалена");
-//        } else {
-//            out.println("запись не удалена");
-//        }
+    public int update(Licence licence) throws IOException, SQLException {
+
+        if (licenceDao.existById(licence.getId())) {
+            return licenceDao.update(licence);
+        } else throw new NoSuchElementException("Не найден");
+
     }
 }

@@ -2,10 +2,12 @@ package com.example.newhomework.dao;
 
 import com.example.newhomework.entity.Author;
 
+import java.sql.SQLException;
+
 public interface AuthorDao {
-    int create(Author author);
+    int create(Author author) throws SQLException;
     Author getById(long id);
-    int delete(long id);
-    int update(Author author);
+    int delete(long id) throws SQLException;
+    int update(Author author) throws SQLException;
     boolean existById(Long id);
 }
