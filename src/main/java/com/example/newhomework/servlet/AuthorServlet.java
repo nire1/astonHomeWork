@@ -36,11 +36,11 @@ public class AuthorServlet extends HttpServlet {
            resp.setContentType("application/json");
            resp.setCharacterEncoding("UTF-8");
            resp.getWriter().write(gson.toJson(authorDto));
+           resp.setStatus(200);
        }catch (NoSuchElementException e){
+           resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
            resp.getWriter().println("Не найден");
        }
-
-
 
     }
 
@@ -57,18 +57,12 @@ public class AuthorServlet extends HttpServlet {
 
             try {
                 authorService.create(author);
+                resp.setStatus(HttpServletResponse.SC_OK);
                 out.println("Запись успешна");
             } catch (SQLException e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 out.println(e.getMessage());
             }
-
-
-//        if (authorService.create(author)>0){
-//            out.println("Запись успешна");
-//        } else {
-//            out.println("Запись не создалась");
-//        }
-
     }
 
     @Override
@@ -84,17 +78,12 @@ public class AuthorServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         try {
             authorService.update(updatedAuthor);
+            resp.setStatus(HttpServletResponse.SC_OK);
             out.println("Запись успешна");
         } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.println(e.getMessage());
         }
-//        if (authorService.update(updatedAuthor) > 0) {
-//            out.println("Запись успешна");
-//        } else {
-//            out.println("Запись не создалась");
-//        }
-
-
     }
 
     @Override
@@ -105,21 +94,12 @@ public class AuthorServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         try {
             authorService.delete(id);
+            resp.setStatus(HttpServletResponse.SC_OK);
             out.println("Запись успешна");
-//            if (authorService.delete(id) > 0) {
-//                resp.setStatus(200);
-//                out.println("Запись успешна");
-//
-//            } else {
-//                resp.setStatus(500);
-//                out.println("id не найден");
-//            }
         } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.println(e.getMessage());
-
         }
-
-
     }
 
 

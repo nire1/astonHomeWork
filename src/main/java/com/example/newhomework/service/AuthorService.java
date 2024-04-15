@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public interface AuthorService {
-    int create(Author author) throws IOException, SQLException;
+    void create(Author author) throws IOException, SQLException;
     AuthorDto getById(long id);
     int delete(Long id) throws IOException, SQLException;
     int update(Author author) throws IOException, SQLException;

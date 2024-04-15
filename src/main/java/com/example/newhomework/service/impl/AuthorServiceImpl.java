@@ -18,8 +18,8 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public int create(Author author) throws IOException, SQLException {
-        return authorDao.create(author);
+    public void create(Author author) throws IOException, SQLException {
+         authorDao.create(author);
     }
 
     @Override

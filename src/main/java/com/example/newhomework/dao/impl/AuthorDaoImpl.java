@@ -28,17 +28,15 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public int create(Author author) throws SQLException {
-        int status;
+    public void create(Author author) throws SQLException {
+
         try
                 (PreparedStatement preparedStatement = connection.prepareStatement(
                         "INSERT INTO authors(name, licence_id) VALUES (?,?)")) {
             preparedStatement.setString(1, author.getName());
             preparedStatement.setLong(2, author.getLicence().getId());
-            status = preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
         }
-
-        return status;
     }
 
     @Override
